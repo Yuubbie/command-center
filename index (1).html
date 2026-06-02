@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ubong's Command Centre</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #1D9E75; --teal-light: #E1F5EE; --teal-dark: #085041;
+  --blue: #185FA5; --blue-light: #E6F1FB; --blue-dark: #042C53;
+  --purple: #534AB7; --purple-light: #EEEDFE;
+  --orange: #D85A30; --orange-light: #FEF3EE;
+  --amber: #BA7517; --amber-light: #FAEEDA;
+  --pink: #993556; --pink-light: #FBEAF0;
+  --green: #3B6D11; --green-light: #EAF3DE;
+  --gray: #5F5E5A; --gray-light: #F1EFE8;
+  --red: #A32D2D; --red-light: #FCEBEB;
+  --white: #ffffff; --bg: #f8f7f4; --text: #1a1a18; --muted: #888780;
+  --border: rgba(0,0,0,0.09);
+  --radius: 10px; --radius-lg: 16px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* NAV */
+.nav { background: var(--blue-dark); padding: 0 1.5rem; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; gap: 0; overflow-x: auto; }
+.nav-brand { font-family: 'DM Serif Display', serif; color: white; font-size: 1rem; white-space: nowrap; padding: 1rem 1.5rem 1rem 0; border-right: 1px solid rgba(255,255,255,0.15); margin-right: 1rem; flex-shrink: 0; }
+.nav-tabs { display: flex; gap: 2px; }
+.nav-tab { padding: 0.9rem 1rem; color: rgba(255,255,255,0.6); font-size: 0.8rem; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; background: none; border-top: none; border-left: none; border-right: none; letter-spacing: 0.02em; }
+.nav-tab:hover { color: rgba(255,255,255,0.9); }
+.nav-tab.active { color: white; border-bottom-color: #5DCAA5; }
+
+/* LAYOUT */
+.page { display: none; padding: 2rem 1.5rem; max-width: 860px; margin: 0 auto; animation: fadeIn 0.25s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* HERO */
+.hero { text-align: center; padding: 2.5rem 1rem 2rem; }
+.hero h1 { font-family: 'DM Serif Display', serif; font-size: 2.2rem; color: var(--blue-dark); line-height: 1.2; margin-bottom: 0.5rem; }
+.hero p { color: var(--gray); font-size: 0.9rem; margin-bottom: 0.3rem; }
+.alert { background: var(--amber-light); border: 1px solid var(--amber); border-radius: var(--radius); padding: 0.9rem 1.2rem; font-size: 0.85rem; color: var(--amber); font-weight: 500; margin: 1.2rem 0; text-align: left; }
+.info-box { background: var(--teal-light); border: 1px solid var(--teal); border-radius: var(--radius); padding: 0.9rem 1.2rem; font-size: 0.85rem; color: var(--teal-dark); font-weight: 500; margin: 1rem 0; }
+
+/* STATS */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 1.2rem 0; }
+.stat-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center; }
+.stat-num { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--blue); line-height: 1; }
+.stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+/* DOMAIN CARDS */
+.domain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 1.2rem 0; }
+.domain-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.2rem; border-top: 3px solid var(--blue); }
+.domain-card.d1 { border-top-color: var(--teal); }
+.domain-card.d2 { border-top-color: var(--blue); }
+.domain-card.d3 { border-top-color: var(--purple); }
+.domain-card.d4 { border-top-color: var(--orange); }
+.domain-priority { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 4px; }
+.domain-name { font-size: 1rem; font-weight: 600; color: var(--text); }
+.domain-desc { font-size: 0.78rem; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+
+/* SECTION HEADINGS */
+.section-title { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--blue-dark); margin: 2rem 0 0.8rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--teal); }
+
+/* COURSE TABLE */
+.table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); background: white; margin: 0.8rem 0; }
+table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+th { background: var(--teal); color: white; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.04em; }
+td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--teal-light); }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 0.7rem; font-weight: 600; }
+.badge-red { background: var(--red-light); color: var(--red); }
+.badge-amber { background: var(--amber-light); color: var(--amber); }
+.badge-green { background: var(--green-light); color: var(--green); }
+.badge-blue { background: var(--blue-light); color: var(--blue); }
+.progress { height: 4px; background: var(--gray-light); border-radius: 99px; margin-top: 4px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 99px; background: var(--teal); }
+
+/* SCHEDULE */
+.day-block { margin-bottom: 1.5rem; }
+.day-header { background: var(--blue-dark); color: white; padding: 0.7rem 1rem; border-radius: var(--radius) var(--radius) 0 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
+.day-name { font-family: 'DM Serif Display', serif; font-size: 1rem; }
+.day-tag { font-size: 0.72rem; color: rgba(255,255,255,0.65); }
+.slots { background: white; border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); overflow: hidden; }
+.slot { display: flex; align-items: flex-start; gap: 12px; padding: 9px 14px; border-bottom: 1px solid var(--border); border-left: 3px solid transparent; }
+.slot:last-child { border-bottom: none; }
+.slot.school { border-left-color: var(--teal); background: var(--teal-light); }
+.slot.siwes { border-left-color: var(--teal); background: #f0faf6; }
+.slot.family { border-left-color: var(--orange); background: var(--orange-light); }
+.slot.church { border-left-color: var(--purple); background: var(--purple-light); }
+.slot.uber { border-left-color: var(--amber); background: var(--amber-light); }
+.slot.rest { border-left-color: var(--gray); background: var(--gray-light); }
+.slot.music { border-left-color: var(--pink); background: var(--pink-light); }
+.slot.growth { border-left-color: var(--green); background: var(--green-light); }
+.slot.work { border-left-color: var(--blue); background: var(--blue-light); }
+.slot-time { font-size: 0.72rem; color: var(--muted); min-width: 88px; padding-top: 2px; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.slot-title { font-size: 0.83rem; font-weight: 500; color: var(--text); }
+.slot-sub { font-size: 0.75rem; color: var(--gray); margin-top: 2px; }
+
+/* LEGEND */
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1.2rem; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: var(--gray); }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+/* CHECKLIST */
+.block-header { padding: 0.7rem 1rem; border-radius: var(--radius) var(--radius) 0 0; color: white; font-weight: 600; font-size: 0.85rem; }
+.checklist { background: white; border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); margin-bottom: 1.2rem; overflow: hidden; }
+.check-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
+.check-item:last-child { border-bottom: none; }
+.check-item:hover { background: #fafaf8; }
+.check-box { width: 20px; height: 20px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 1px; transition: all 0.15s; background: white; }
+.check-box.checked { background: var(--teal); border-color: var(--teal); }
+.check-box.checked::after { content: ''; width: 10px; height: 6px; border-left: 2px solid white; border-bottom: 2px solid white; transform: rotate(-45deg) translateY(-1px); display: block; }
+.check-label { font-size: 0.83rem; line-height: 1.4; color: var(--text); }
+.check-domain { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+.check-item.done .check-label { text-decoration: line-through; color: var(--muted); }
+
+/* RULES */
+.rule-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; display: flex; overflow: hidden; }
+.rule-num { background: var(--blue); color: white; padding: 1rem; min-width: 54px; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 1.1rem; flex-shrink: 0; }
+.rule-body { padding: 0.9rem 1.1rem; }
+.rule-title { font-weight: 600; font-size: 0.88rem; color: var(--blue-dark); margin-bottom: 3px; }
+.rule-detail { font-size: 0.8rem; color: var(--gray); line-height: 1.5; }
+
+/* RESET BTN */
+.reset-btn { background: none; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.5rem 1rem; font-size: 0.78rem; color: var(--muted); cursor: pointer; margin-top: 1rem; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+.reset-btn:hover { background: var(--gray-light); color: var(--text); }
+
+/* FOOTER */
+.footer { text-align: center; padding: 2rem 1rem; font-size: 0.75rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 3rem; }
+
+@media (max-width: 600px) {
+  .hero h1 { font-size: 1.6rem; }
+  .slot-time { min-width: 72px; }
+  .page { padding: 1.2rem 1rem; }
+  .nav-brand { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">Ubong's HQ</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('overview', this)">Overview</button>
+    <button class="nav-tab" onclick="showPage('schedule', this)">Schedule</button>
+    <button class="nav-tab" onclick="showPage('courses', this)">Courses</button>
+    <button class="nav-tab" onclick="showPage('checklist', this)">Daily Checklist</button>
+    <button class="nav-tab" onclick="showPage('rules', this)">Rules</button>
+  </div>
+</nav>
+
+<!-- OVERVIEW -->
+<div id="overview" class="page active">
+  <div class="hero">
+    <h1>Your Personal Command Centre</h1>
+    <p>School · Work · Church · Family — all in one place</p>
+    <p style="font-size:0.8rem;color:var(--muted)">Built June 2026 — Review every Sunday night</p>
+  </div>
+
+  <div class="alert">⚠ CRITICAL: Exams in 3–4 weeks. SIWES starts 8 June. School is Priority #1 until exams are done.</div>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Courses to cover</div></div>
+    <div class="stat-card"><div class="stat-num">~3wk</div><div class="stat-label">To exam window</div></div>
+    <div class="stat-card"><div class="stat-num">5hrs</div><div class="stat-label">Daily study target</div></div>
+    <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">Life domains</div></div>
+  </div>
+
+  <p class="section-title">Your 4 Domains</p>
+  <div class="domain-grid">
+    <div class="domain-card d1">
+      <div class="domain-priority">Priority 1 — Urgent</div>
+      <div class="domain-name">School & SIWES</div>
+      <div class="domain-desc">6 courses, exams in 3 weeks, SIWES from 8 June</div>
+    </div>
+    <div class="domain-card d2">
+      <div class="domain-priority">Priority 2 — High</div>
+      <div class="domain-name">Work & Freelance</div>
+      <div class="domain-desc">Job applications, freelance dev, LinkedIn growth</div>
+    </div>
+    <div class="domain-card d3">
+      <div class="domain-priority">Priority 3 — Steady</div>
+      <div class="domain-name">Church & Music</div>
+      <div class="domain-desc">Admin, attendance, music director, Sunday reports</div>
+    </div>
+    <div class="domain-card d4">
+      <div class="domain-priority">Non-negotiable</div>
+      <div class="domain-name">Family</div>
+      <div class="domain-desc">Wife + 3 kids — protected 8–10am every day</div>
+    </div>
+  </div>
+
+  <div class="info-box">💡 Your power window is 3am–8am. This is when you study. Protect it like your first class depends on it — because it does.</div>
+</div>
+
+<!-- SCHEDULE -->
+<div id="schedule" class="page">
+  <p class="section-title">Master Weekly Schedule</p>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>School</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Family</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Church</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Uber</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--pink)"></div>Music</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Growth</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Work</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--gray)"></div>Rest</div>
+  </div>
+  <div id="schedule-container"></div>
+</div>
+
+<!-- COURSES -->
+<div id="courses" class="page">
+  <p class="section-title">Course Study Priority</p>
+  <div class="alert">Study in this exact order. Finish one before moving to the next. CYB 301 first — you're already 30% in.</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Course</th><th>Topic Area</th><th>Priority</th><th>Progress</th><th>Target</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1st</strong></td><td><strong>CYB 301</strong></td>
+          <td>Core Cybersecurity<br><small style="color:var(--muted)">Principles & Frameworks</small></td>
+          <td><span class="badge badge-red">P1 Urgent</span></td>
+          <td>30% done<div class="progress"><div class="progress-fill" style="width:30%"></div></div></td>
+          <td style="font-size:0.78rem">Finish in<br>4 days</td>
+        </tr>
+        <tr>
+          <td><strong>2nd</strong></td><td><strong>CYB 303</strong></td>
+          <td>Network Security<br><small style="color:var(--muted)">Protocols & Defense</small></td>
+          <td><span class="badge badge-red">P1 Urgent</span></td>
+          <td>~0%<div class="progress"><div class="progress-fill" style="width:2%;background:var(--red)"></div></div></td>
+          <td style="font-size:0.78rem">Days 5–8</td>
+        </tr>
+        <tr>
+          <td><strong>3rd</strong></td><td><strong>CYB 305</strong></td>
+          <td>Ethical Hacking<br><small style="color:var(--muted)">Pen Testing & Tools</small></td>
+          <td><span class="badge badge-red">P1 Urgent</span></td>
+          <td>~0%<div class="progress"><div class="progress-fill" style="width:2%;background:var(--red)"></div></div></td>
+          <td style="font-size:0.78rem">Days 9–12</td>
+        </tr>
+        <tr>
+          <td><strong>4th</strong></td><td><strong>CYB 307</strong></td>
+          <td>Digital Forensics<br><small style="color:var(--muted)">Investigation & Evidence</small></td>
+          <td><span class="badge badge-amber">P2 High</span></td>
+          <td>~0%<div class="progress"><div class="progress-fill" style="width:2%;background:var(--red)"></div></div></td>
+          <td style="font-size:0.78rem">Days 13–15</td>
+        </tr>
+        <tr>
+          <td><strong>5th</strong></td><td><strong>CSC 303</strong></td>
+          <td>CS Core<br><small style="color:var(--muted)">Theory & Algorithms</small></td>
+          <td><span class="badge badge-amber">P2 High</span></td>
+          <td>~0%<div class="progress"><div class="progress-fill" style="width:2%;background:var(--red)"></div></div></td>
+          <td style="font-size:0.78rem">Days 16–18</td>
+        </tr>
+        <tr>
+          <td><strong>6th</strong></td><td><strong>CSC 309</strong></td>
+          <td>CS Advanced<br><small style="color:var(--muted)">Systems & Applications</small></td>
+          <td><span class="badge badge-green">P3 Important</span></td>
+          <td>~0%<div class="progress"><div class="progress-fill" style="width:2%;background:var(--red)"></div></div></td>
+          <td style="font-size:0.78rem">Days 19–21</td>
+        </tr>
+        <tr style="background:var(--blue-light)">
+          <td><strong>+</strong></td><td><strong>CYB 299</strong></td>
+          <td>SIWES — Virtual<br><small style="color:var(--muted)">siwespro.com.ng</small></td>
+          <td><span class="badge badge-blue">Parallel</span></td>
+          <td>Starts 8 Jun<div class="progress"><div class="progress-fill" style="width:0%;background:var(--blue)"></div></div></td>
+          <td style="font-size:0.78rem">1 hr/day</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="info-box">Power window: 3am–8am = school only. This is your first class insurance policy.</div>
+</div>
+
+<!-- CHECKLIST -->
+<div id="checklist" class="page">
+  <p class="section-title">Daily Checklist</p>
+  <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1.2rem">Tick as you go. Checks are saved in your browser — they reset each day when you clear them.</p>
+
+  <div class="block-header" style="background:var(--teal)">🌅 Morning Block — 3am to 8am (School Power Window)</div>
+  <div class="checklist">
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div><div class="check-label">Study current priority course — minimum 2 hours</div><div class="check-domain">School</div></div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div><div class="check-label">SIWES module or logbook entry (from 8 June)</div><div class="check-domain">School / SIWES</div></div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div><div class="check-label">Review yesterday's notes — 20 minutes</div><div class="check-domain">School</div></div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div><div class="check-label">Eat and pray before 8am</div><div class="check-domain">Personal</div></div>
+    </div>
+  </div>
+
+  <div class="block-header" style="background:var(--blue)">☀️ Afternoon Block — 10am to 4pm</div>
+  <div class="checklist">
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div><div class="check-label">Send 1 freelance job application</div><div class="check-domain">Work</div></div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div><div class="check-label">Church admin task or member follow-up</div><div class="check-domain">Church</div></div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div><div class="check-label">30 min AI / skill learning</div><div class="check-domain">Growth</div></div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div><div class="check-label">Rest / nap before Uber shift</div><div class="check-domain">Personal</div></div>
+    </div>
+  </div>
+
+  <div class="block-header" style="background:var(--purple)">🌙 Evening Block — Before sleep</div>
+  <div class="checklist">
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div><div class="check-label">Pick your Daily 3 tasks for TOMORROW</div><div class="check-domain">System — do this tonight, not in the morning</div></div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div><div class="check-label">Update SIWES logbook if not yet done</div><div class="check-domain">School</div></div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div><div class="check-label">Audio lecture during Uber slow periods</div><div class="check-domain">School</div></div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div><div class="check-label">Wind down — sleep by 1am at the latest</div><div class="check-domain">Personal</div></div>
+    </div>
+  </div>
+
+  <button class="reset-btn" onclick="resetChecklist()">↺ Reset all checkboxes</button>
+</div>
+
+<!-- RULES -->
+<div id="rules" class="page">
+  <p class="section-title">The 10 System Rules</p>
+  <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1.2rem">Read these every Sunday night. Break them and the system collapses.</p>
+
+  <div class="rule-card"><div class="rule-num">01</div><div class="rule-body"><div class="rule-title">School before everything else each morning.</div><div class="rule-detail">Not WhatsApp. Not football highlights. Not church admin. School first — every single day until exams are done.</div></div></div>
+  <div class="rule-card"><div class="rule-num">02</div><div class="rule-body"><div class="rule-title">Pick your Daily 3 the night before.</div><div class="rule-detail">Not in the morning when you're tired. Decide while you still have energy — before you sleep.</div></div></div>
+  <div class="rule-card"><div class="rule-num">03</div><div class="rule-body"><div class="rule-title">Every task gets written down the moment it enters your head.</div><div class="rule-detail">Stop trusting your memory. You have too much going on. Write it down immediately — phone notes, paper, anything.</div></div></div>
+  <div class="rule-card"><div class="rule-num">04</div><div class="rule-body"><div class="rule-title">SIWES logbook updated every day from 8 June.</div><div class="rule-detail">Even 10 minutes counts. Never let it pile up — it becomes impossible to catch up and you'll lose marks.</div></div></div>
+  <div class="rule-card"><div class="rule-num">05</div><div class="rule-body"><div class="rule-title">Every Sunday evening is your Weekly Reset — 20 minutes.</div><div class="rule-detail">Review what happened. Plan the coming week. Update all trackers. This keeps the whole system alive.</div></div></div>
+  <div class="rule-card"><div class="rule-num">06</div><div class="rule-body"><div class="rule-title">Church music song must be ready by Wednesday. Not Friday.</div><div class="rule-detail">Wednesday deadline removes Sunday morning panic entirely. Lead with excellence, not last-minute stress.</div></div></div>
+  <div class="rule-card"><div class="rule-num">07</div><div class="rule-body"><div class="rule-title">Family time 8–10am is protected daily.</div><div class="rule-detail">The kids and your wife get you — not your phone, not your laptop. Be fully present. This is non-negotiable.</div></div></div>
+  <div class="rule-card"><div class="rule-num">08</div><div class="rule-body"><div class="rule-title">Sleep by 1am at the latest on Uber nights.</div><div class="rule-detail">A tired Ubong learns nothing and earns less. You cannot study on 2 hours of sleep. Protect your sleep.</div></div></div>
+  <div class="rule-card"><div class="rule-num">09</div><div class="rule-body"><div class="rule-title">One freelance application per day. Just one.</div><div class="rule-detail">Consistent beats frantic. One good application daily = 30 this month. Quality over panic-applying.</div></div></div>
+  <div class="rule-card"><div class="rule-num">10</div><div class="rule-body"><div class="rule-title">Every Sunday: update register, file report, plan next week.</div><div class="rule-detail">30 minutes total. Church admin fully done before Monday starts. Never carry it into the week.</div></div></div>
+</div>
+
+<div class="footer">
+  Ubong Emmanuel James — Personal Command Centre — June 2026<br>
+  Host on GitHub Pages · Bookmark on your phone · Review every Sunday night
+</div>
+
+<script>
+const scheduleData = [
+  { day: "Monday", tag: "School + SIWES (from 8 Jun)", slots: [
+    { time: "3:00–6:00am", title: "Deep study block", sub: "CYB 301 → then CYB 303", type: "school" },
+    { time: "6:00–7:00am", title: "SIWES module", sub: "siwespro.com.ng — logbook entry", type: "siwes" },
+    { time: "7:00–8:00am", title: "Personal prep + breakfast", sub: "Get ready, eat, pray", type: "rest" },
+    { time: "8:00–10:00am", title: "Family time", sub: "Kids + wife — protected, no screens", type: "family" },
+    { time: "10:00am–12pm", title: "Study continuation", sub: "Review notes, past exam questions", type: "school" },
+    { time: "12:00–2:00pm", title: "Church admin + 1 job application", sub: "Follow-ups + LinkedIn", type: "church" },
+    { time: "2:00–4:00pm", title: "Rest / nap", sub: "You need this before Uber", type: "rest" },
+    { time: "5:00–11:00pm", title: "Uber", sub: "Audio lectures during slow periods", type: "uber" },
+  ]},
+  { day: "Tuesday", tag: "School + Skill building", slots: [
+    { time: "3:00–6:00am", title: "Deep study block", sub: "Continue current course", type: "school" },
+    { time: "6:00–7:00am", title: "SIWES module", sub: "Assignments + logbook", type: "siwes" },
+    { time: "7:00–8:00am", title: "Personal prep", sub: "", type: "rest" },
+    { time: "8:00–10:00am", title: "Family time", sub: "Protected — no screens", type: "family" },
+    { time: "10:00am–12pm", title: "Study + past questions", sub: "Practice exam questions", type: "school" },
+    { time: "12:00–2:00pm", title: "AI / skill learning", sub: "YouTube, courses, build something small", type: "growth" },
+    { time: "2:00–4:00pm", title: "Rest", sub: "", type: "rest" },
+    { time: "5:00–11:00pm", title: "Uber", sub: "", type: "uber" },
+  ]},
+  { day: "Wednesday", tag: "Church music deadline day", slots: [
+    { time: "3:00–5:00am", title: "Deep study block", sub: "Current course", type: "school" },
+    { time: "5:00–6:30am", title: "Church music prep", sub: "Song ready by TODAY — finalize", type: "church" },
+    { time: "6:30–8:00am", title: "SIWES + personal prep", sub: "", type: "siwes" },
+    { time: "8:00–10:00am", title: "Family time", sub: "Protected", type: "family" },
+    { time: "10:00am–12pm", title: "Study — lighter review", sub: "", type: "school" },
+    { time: "12:00–2:00pm", title: "Freelance / job applications", sub: "Apply, follow up", type: "work" },
+    { time: "2:00–4:00pm", title: "Rest", sub: "", type: "rest" },
+    { time: "5:00–11:00pm", title: "Uber", sub: "", type: "uber" },
+  ]},
+  { day: "Thursday", tag: "School + Growth", slots: [
+    { time: "3:00–6:00am", title: "Deep study block", sub: "New course or heavy revision", type: "school" },
+    { time: "6:00–7:00am", title: "SIWES module", sub: "", type: "siwes" },
+    { time: "7:00–8:00am", title: "Personal prep", sub: "", type: "rest" },
+    { time: "8:00–10:00am", title: "Family time", sub: "Protected", type: "family" },
+    { time: "10:00am–12pm", title: "Study + past questions", sub: "", type: "school" },
+    { time: "12:00–2:00pm", title: "AI / agent learning", sub: "Build something, watch tutorials", type: "growth" },
+    { time: "2:00–4:00pm", title: "Rest", sub: "", type: "rest" },
+    { time: "5:00–11:00pm", title: "Uber", sub: "", type: "uber" },
+  ]},
+  { day: "Friday", tag: "School + Church admin", slots: [
+    { time: "3:00–6:00am", title: "Deep study block", sub: "Heavy revision session", type: "school" },
+    { time: "6:00–7:00am", title: "SIWES module", sub: "", type: "siwes" },
+    { time: "7:00–8:00am", title: "Personal prep", sub: "", type: "rest" },
+    { time: "8:00–10:00am", title: "Family time", sub: "Protected", type: "family" },
+    { time: "10:00am–12pm", title: "Church admin", sub: "Attendance follow-ups, member check-ins", type: "church" },
+    { time: "12:00–2:00pm", title: "Freelance + LinkedIn", sub: "Apply, connect, post", type: "work" },
+    { time: "2:00–4:00pm", title: "Rest", sub: "", type: "rest" },
+    { time: "5:00–11:00pm", title: "Uber", sub: "", type: "uber" },
+  ]},
+  { day: "Saturday", tag: "Music school + family", slots: [
+    { time: "3:00–6:00am", title: "Light study review", sub: "Revision only — no new material", type: "school" },
+    { time: "6:00–10:00am", title: "Family morning", sub: "Protected rest with family", type: "family" },
+    { time: "11:00am–2:00pm", title: "Music school teaching", sub: "Children's music classes — fixed commitment", type: "music" },
+    { time: "2:00–4:00pm", title: "Rest + family", sub: "", type: "family" },
+    { time: "5:00–11:00pm", title: "Uber", sub: "", type: "uber" },
+  ]},
+  { day: "Sunday", tag: "Church + Weekly Reset", slots: [
+    { time: "3:00–5:00am", title: "Light study review", sub: "No new material — revision only", type: "school" },
+    { time: "5:00–6:00am", title: "Personal + spiritual prep", sub: "", type: "rest" },
+    { time: "Morning", title: "Church — Music Director", sub: "Lead worship, present song", type: "church" },
+    { time: "Post-service", title: "Church admin wrap-up", sub: "Mark attendance, update register", type: "church" },
+    { time: "Afternoon", title: "Family time", sub: "Full afternoon — protected", type: "family" },
+    { time: "8:00–9:00pm", title: "Weekly Reset", sub: "Review week, plan next 7 days, update all trackers", type: "growth" },
+    { time: "9:00pm+", title: "Early sleep", sub: "No Uber on Sundays — rest", type: "rest" },
+  ]},
+];
+
+function renderSchedule() {
+  const c = document.getElementById('schedule-container');
+  scheduleData.forEach(({ day, tag, slots }) => {
+    const block = document.createElement('div');
+    block.className = 'day-block';
+    block.innerHTML = `
+      <div class="day-header">
+        <span class="day-name">${day}</span>
+        <span class="day-tag">${tag}</span>
+      </div>
+      <div class="slots">
+        ${slots.map(s => `
+          <div class="slot ${s.type}">
+            <span class="slot-time">${s.time}</span>
+            <div>
+              <div class="slot-title">${s.title}</div>
+              ${s.sub ? `<div class="slot-sub">${s.sub}</div>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    c.appendChild(block);
+  });
+}
+
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function toggleCheck(el) {
+  const box = el.querySelector('.check-box');
+  box.classList.toggle('checked');
+  el.classList.toggle('done');
+}
+
+function resetChecklist() {
+  document.querySelectorAll('.check-box').forEach(b => b.classList.remove('checked'));
+  document.querySelectorAll('.check-item').forEach(i => i.classList.remove('done'));
+}
+
+renderSchedule();
+</script>
+</body>
+</html>
